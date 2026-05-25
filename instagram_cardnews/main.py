@@ -30,6 +30,7 @@ from scrapers.amazon import AmazonScraper
 from scrapers.tiktok import TikTokScraper
 from scrapers.google_trends import GoogleTrendsScraper
 from card_news.generator import CardNewsGenerator
+from card_news.editorial_generator import EditorialCardNewsGenerator
 from instagram.client import InstagramClient
 from instagram.scheduler import PostScheduler
 from utils.text_utils import build_instagram_caption
@@ -49,14 +50,15 @@ logger.add(OUTPUT_DIR / "app.log", rotation="10 MB", level="DEBUG")
 # ──────────────────────────────────────────────────────────────────────
 # 브랜드 데이터 수집 + 카드뉴스 생성 파이프라인
 # ──────────────────────────────────────────────────────────────────────
-def run_pipeline(brand_name: str) -> List[Path]:
+def run_pipeline(brand_name: str, style: str = "editorial") -> List[Path]:
     """
     전체 파이프라인:
       1. 데이터 수집 (브랜드 정보, 재무, 올리브영, 네이버, 아마존, TikTok, 트렌드)
       2. 카드뉴스 8장 생성
+    style: "editorial" (화이트 에디토리얼+Sankey, 기본) | "dark" (레거시 다크+워터폴)
     Returns: 생성된 이미지 경로 리스트
     """
-    console.rule(f"[bold magenta]🚀 {brand_name} 브랜드 분석 시작[/]")
+    console.rule(f"[bold magenta]🚀 {brand_name} 브랜드 분석 시작 ({style})[/]")
 
     steps = [
         ("브랜드 기본 정보 수집",   lambda: BrandInfoScraper().fetch(brand_name)),
@@ -103,7 +105,10 @@ def run_pipeline(brand_name: str) -> List[Path]:
 
     # 카드뉴스 생성
     console.rule("[bold cyan]🎨 카드뉴스 생성[/]")
-    generator = CardNewsGenerator()
+    if style == "dark":
+        generator = CardNewsGenerator()
+    else:
+        generator = EditorialCardNewsGenerator()
     paths = generator.generate(
         brand=brand_info,
         financial=financial,
@@ -147,9 +152,12 @@ def cli():
 @cli.command()
 @click.option("--brand", "-b", required=True, help="분석할 브랜드명 (예: 라네즈)")
 @click.option("--output", "-o", default=None, help="출력 디렉토리 (기본: ./output/브랜드명)")
-def generate(brand: str, output: Optional[str]):
+@click.option("--style", "-s",
+              type=click.Choice(["editorial", "dark"]), default="editorial",
+              help="editorial=화이트+Sankey(기본) / dark=다크+워터폴")
+def generate(brand: str, output: Optional[str], style: str):
     """브랜드 분석 + 카드뉴스 이미지 생성"""
-    paths = run_pipeline(brand)
+    paths = run_pipeline(brand, style=style)
     if output:
         import shutil
         out = Path(output)
@@ -166,9 +174,13 @@ def generate(brand: str, output: Optional[str]):
 @click.option("--time",  "post_time", default=None,
               help="예약 포스팅 시간 (예: 09:00)")
 @click.option("--caption-only", is_flag=True, help="캡션만 출력 (업로드 없음)")
-def post(brand: str, now: bool, post_time: Optional[str], caption_only: bool):
+@click.option("--style", "-s",
+              type=click.Choice(["editorial", "dark"]), default="editorial",
+              help="editorial=화이트+Sankey(기본) / dark=다크+워터폴")
+def post(brand: str, now: bool, post_time: Optional[str], caption_only: bool,
+         style: str):
     """카드뉴스 생성 + Instagram 포스팅"""
-    paths = run_pipeline(brand)
+    paths = run_pipeline(brand, style=style)
     if not paths:
         console.print("[red]카드뉴스 생성 실패[/]")
         return

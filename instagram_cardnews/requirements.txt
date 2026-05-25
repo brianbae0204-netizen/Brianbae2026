@@ -3,10 +3,9 @@ instagrapi>=2.0.0
 instaloader>=4.10.0
 
 # ── Image & Chart Generation ──────────────────────────────────────────────────
+# Sankey(손익 흐름)·워터폴 차트는 matplotlib 베지어 렌더로 생성 (크로뮴 의존성 없음)
 Pillow>=10.0.0
 matplotlib>=3.8.0
-plotly>=5.18.0
-kaleido>=0.2.1
 numpy>=1.26.0
 
 # ── Web Scraping ─────────────────────────────────────────────────────────────
