@@ -1,2 +1,6 @@
-# Brianbae2026
-brianbae_inventory
+# Brianbae2026 — Instagram 브랜드 카드뉴스 자동화
+
+> **브랜드명 하나만 넣으면** — 전성분 검색 · 재무 수치 · 플랫폼 랭킹 · 트렌드를 자동 수집하여  
+> **인스타그램 카드뉴스 8장**을 생성하고 **자동 포스팅**까지 수행합니다.
+
+👉 **[상세 사용법은 instagram_cardnews/ 폴더 참고](./instagram_cardnews/)**

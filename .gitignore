@@ -1,0 +1,32 @@
+# 환경 변수 (절대 커밋 금지)
+.env
+instagram_cardnews/.env
+
+# 생성된 출력물
+instagram_cardnews/output/
+!instagram_cardnews/output/.gitkeep
+
+# 세션 파일
+instagram_cardnews/output/ig_session.json
+
+# 폰트 (대용량 바이너리)
+instagram_cardnews/fonts/*.otf
+instagram_cardnews/fonts/*.ttf
+instagram_cardnews/fonts/*.ttc
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
